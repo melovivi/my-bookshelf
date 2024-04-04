@@ -10,11 +10,15 @@ export class BookService{
     }
 
     postBook(book: BookEntity) {
-        this.repository.postBook(book);
+       return this.repository.postBook(book);
     }
 
     getIdBooks(id: number) {
         return this.repository.getIdBooks(id);
+    }
+
+    putBooks(id: number, book: BookEntity) {
+        return this.repository.putBooks(id, book);
     }
 
     deleteBook(id: number) {            

@@ -1,5 +1,4 @@
 import { DataSource } from "typeorm";
-import { AppDataSource } from "../data-source";
 import { BookEntity } from "../entity/BookEntity";
 
 export class BookRepository{
@@ -9,28 +8,50 @@ export class BookRepository{
     repository = this.appDataSource.getRepository(BookEntity);
 
     async postBook(book: BookEntity) {
-        await this.appDataSource.manager.save(book)
-    }
 
-    getAllBooks() {
-        return this.repository.find()
-    }
-
-    getIdBooks(id: number) {
         try{
-            return this.repository.findOneBy({id: id,});
+            return await this.appDataSource.manager.save(book)
         }catch(error){
-            console.error('Erro ao encontrar livro por ID:', error);
-            throw error;
+            if (error.code === "23503") {
+                return "Id de editora não encontrado";
+            } else {
+                return error.message;
+            }
         }
     }
-    
-    deleteBook(id: number) {
+
+    async getAllBooks() {
         try{
-            return this.repository.delete(id);
+            return await this.repository.find({relations: ['publisherId']})
         }catch(error){
-            console.error('Erro ao deletar livro por ID:', error);
-            throw error;
+            return error;
+        }
+        
+    }
+
+    async getIdBooks(id: number) {
+        try{
+            return await this.repository.findOne({
+                where: { id: id },
+                relations: ['publisherId'],
+              });
+        }catch(error){
+            return error;
+        }
+    }
+
+    async putBooks(id: number, book: BookEntity) {
+     
+        return await this.repository.update(id, book);
+        
+        
+    }
+    
+    async deleteBook(id: number) {
+        try{
+            return await this.repository.delete(id);
+        }catch(error){
+            return 'Erro ao deletar livro por ID:' + error;
         }
     }
 
