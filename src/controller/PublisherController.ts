@@ -37,7 +37,7 @@ export class PublisherController{
         const publisherData = req.body as PublisherEntity;
 
         const publisher = new PublisherEntity;
-        publisher.name = publisher.name;
+        publisher.name = publisherData.name;
 
         const id = parseInt(req.params.id) ;
         
